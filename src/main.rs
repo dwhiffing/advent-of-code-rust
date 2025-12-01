@@ -1,22 +1,28 @@
 use std::env;
 
 pub mod utils;
-mod days;
-
-fn invalid() {
-  println!("Invalid puzzle number");
+pub struct Day {
+  pub year: u32,
+  pub day: u32,
+  pub run: fn(),
 }
+
+inventory::collect!(Day);
+
+mod aoc_2025;
+mod aoc_2024;
 
 fn main() {
   let args: Vec<String> = env::args().collect();
-  let num: i32 = args[1].parse().expect("number");
+  let year: u32 = args[1].parse().expect("number");
+  let day: u32 = args[2].parse().expect("number");
 
-  let run: fn() = match num {
-    1 => days::day01::run,
-    2 => days::day02::run,
-    3 => days::day03::run,
-    _ => invalid,
-  };
+  let maybe: Option<&Day> = inventory::iter::<Day>
+    .into_iter()
+    .find(|p| p.year == year && p.day == day);
 
-  run();
+  match maybe {
+    Some(p) => (p.run)(),
+    None => println!("No implementation for year {} day {}", year, day),
+  }
 }
