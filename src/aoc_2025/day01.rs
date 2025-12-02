@@ -26,7 +26,7 @@ fn get_zero_count(lines: &Vec<String>, include_spins: bool) -> i32 {
 } 
 
 pub fn run() {
-  let lines: Vec<String> = crate::utils::read_lines("01");
+  let lines: Vec<String> = crate::utils::read_lines("aoc_2025/01");
   let part1: i32 = get_zero_count(&lines, false);
   let part2: i32 = get_zero_count(&lines, true);
 
