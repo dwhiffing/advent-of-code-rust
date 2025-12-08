@@ -1,5 +1,3 @@
-use regex::Regex;
-
 fn zip<T: Clone>(vecs: &Vec<Vec<T>>) -> Vec<Vec<T>> {
   let mut result: Vec<Vec<T>> = vec![vec![]; vecs[0].len()];
 
@@ -13,55 +11,52 @@ fn zip<T: Clone>(vecs: &Vec<Vec<T>>) -> Vec<Vec<T>> {
 }
 
 fn answer_problems(problems: Vec<Vec<String>>) -> u64 {
-  let non_digit_regex = Regex::new(r"\D").unwrap();
-  
   problems
     .iter()
     .map(|problem| {
       let op = problem.last().unwrap().chars().last().unwrap_or('+');
-      
+
       let nums = problem
         .iter()
-        .filter_map(|s| 
-          non_digit_regex.replace_all(s, "").parse::<u64>().ok()
-        );
-      
+        .filter_map(|string| {
+          let digits: String = string
+            .chars()
+            .filter(|c| c.is_ascii_digit())
+            .collect();
+          digits.parse::<u64>().ok()
+        });
+
       if op == '+' { nums.sum::<u64>() } else { nums.product::<u64>() }
     })
     .sum()
 }
 
 fn part_1(lines: &Vec<String>) -> u64 {
-  let non_whitespace_regex = Regex::new(r"\S+").unwrap();
-
   let matches = lines
     .iter()
-    .map(|line| 
-      non_whitespace_regex
-        .find_iter(line)
-        .map(|c| c.as_str().to_string())
-        .collect()
-    )
+    .map(|line| line.split_whitespace().map(str::to_string).collect())
     .collect();
 
-  answer_problems(zip(&matches))
+  let problems = zip(&matches);
+
+  answer_problems(problems)
 }
 
 fn part_2(lines: &Vec<String>) -> u64 {
   let chars: Vec<Vec<char>> = lines
     .iter()
-    .map(|line| line.chars().collect() )
+    .map(|line| line.chars().collect())
     .collect();
 
   let columns: Vec<String> = zip(&chars)
     .iter()
     .rev()
-    .map(|r| r.iter().collect())
+    .map(|chars| chars.iter().collect())
     .collect();
 
   let problems = columns
-    .split(|f| f.trim().is_empty())
-    .map(|s| s.to_vec())
+    .split(|column| column.trim().is_empty())
+    .map(|split| split.to_vec())
     .collect();
 
   answer_problems(problems)
